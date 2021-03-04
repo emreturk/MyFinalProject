@@ -4,16 +4,38 @@ using System.Data;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 
 namespace Business.Concreate
 {
     public class ProductManager : IProductService
-    {
+    { //business codes
+      //validation //Doğrulama kodlar 
+      //...
+      //[LogAspect]-->AOP
+      //[Validate]
+      //[RemoveCache]          
+      //[Transaction]
+      //[Performance]
+      //+++++
+      //Loglama
+      //cacheremove
+      //performance
+      //transaction
+      //yetkilendirme
+      //business codes
+
+
+
+
         IProductDal _productDal;
 
         public ProductManager(IProductDal productDal)
@@ -23,21 +45,21 @@ namespace Business.Concreate
 
         public IDataResults<List<Product>> GetAll()
         {
-            if (DateTime.Now.Hour==22)
+            if (DateTime.Now.Hour == 22)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
 
             }
 
-               return new SuccessDataResult<List<Product>>(_productDal.GetAll(),Messages.ProductsListed);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
         public IDataResults<List<Product>> GetAllByCategoryId(int id)
         {
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p =>p.CategoryId==id));
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
-        public IDataResults<List<Product>>GetByUnitPrice(decimal min, decimal max)
+        public IDataResults<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
             return new SuccessDataResult<List<Product>>
                 (_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
@@ -53,16 +75,13 @@ namespace Business.Concreate
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productID));
         }
 
+        [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            //business codes
-            if (product.ProductName.Length < 2)
-            {
-                //magic strings
-                return new ErrorResult(Messages.ProductNameInvalid);
-            }
-             _productDal.Add(product);
-             return new SuccessResult(Messages.ProductAdded);
+
+           
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
         }
     }
 }

@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Business.Concreate;
+using DataAccess.Abstract;
+using DataAccess.Concreate.EntityFramework;
 
 namespace WebAPI
 {
@@ -27,8 +29,10 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Autofac,Ninject,CastleWindsor,StructureMap,LightInject,DryInject-->IoC Container...
             services.AddControllers();
-            services.AddSingleton<IProductService,ProductManager>();
+            //services.AddSingleton<IProductService, ProductManager>();
+            //services.AddSingleton<IProductDal, EfProductDal>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
